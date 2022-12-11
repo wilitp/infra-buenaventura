@@ -16,4 +16,4 @@ python manage.py migrate --no-input
 rm -rf /app/static/*
 python manage.py collectstatic --no-input
 
-gunicorn --bind :8000 --workers 3 config.wsgi
+gunicorn --reload --bind :8000 --workers 3 config.wsgi
