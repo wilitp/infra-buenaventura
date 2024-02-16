@@ -4,7 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ADD ./req.txt .
 # RUN apk add --no-cache --virtual .pynacl_deps build-base python3-dev libffi-dev libressl-dev mariadb-dev musl-dev zlib-dev py-pip jpeg-dev zlib-dev
-RUN apk add --no-cache --virtual .pynacl_deps build-base python3-dev libffi-dev openssl-dev mariadb-dev musl-dev zlib-dev py-pip jpeg-dev zlib-dev
+RUN apk add --no-cache --virtual .pynacl_deps build-base python3-dev libffi-dev openssl-dev mariadb-dev musl-dev zlib-dev py-pip jpeg-dev zlib-dev glib pango cairo tzdata
 ENV LIBRARY_PATH=/lib:/usr/lib
 RUN python -m pip install -r req.txt
 WORKDIR /app

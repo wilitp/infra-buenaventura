@@ -1,47 +1,63 @@
 version: '3.4'
 
 services:
-  db:
-    image: mysql:5
-    restart: always
-    volumes:
-      - ./database:/var/lib/mysql/
-    expose:
-      - "3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: example
-      MYSQL_DATABASE: BA
-  app:
-    image: ba-backend
-    restart: always
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    depends_on:
-      - db
-    env_file:
-      - .env
-    expose:
-      - "8000"
-    ports:
-      - "8000:8000"
-    volumes:
+db:
+  image: mysql:5
+  restart: always
+  volumes:
+    - /data/database:/var/lib/mysql/
+  expose:
+    - "3306"
+  environment:
+    MYSQL_ROOT_PASSWORD: example
+    MYSQL_DATABASE: BA
+app:
+  image: ba-backend
+  restart: always
+  build:
+    context: .
+    dockerfile: ./Dockerfile
+  depends_on:
+    - db
+  env_file:
+    - .env
+  expose:
+    - "8000"
+  ports:
+    - "8000:8000"
+  volumes:
 
-      # - .:/code
-      - ./BAProject:/app
+    # - .:/code
+    - ./BAProject:/app
 
-      - /data/static:/app/static
-      - /data/media:/app/media
-
-  nginx:
-    image: nginx:1.19.4-alpine
-    restart: always
-    volumes:
-      - /data/static:/usr/share/nginx/html/static
-      - /data/media:/usr/share/nginx/html/media 
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - app
-    ports:
-      - "8026:80"
+    - /data/static:/app/static
+    - /data/media:/app/media
+  labels:
+    ofelia.enabled: "true"
+    ofelia.job-exec.notifications.schedule: "0 0 7 * * *"
+    ofelia.job-exec.notifications.command: "python manage.py notificate"
+ofelia:
+  image: mcuadros/ofelia:latest
+  restart: always
+  depends_on:
+    - app
+  env_file:
+    - .env
+  command: daemon --docker
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+  labels:
+    ofelia.job-local.running.schedule: "@every 20m"
+    ofelia.job-local.running.command: "echo Estoy vivo" 
+nginx:
+  image: nginx:1.19.4-alpine
+  restart: always
+  volumes:
+    - /data/static:/usr/share/nginx/html/static
+    - /data/media:/usr/share/nginx/html/media 
+    - ./nginx.conf:/etc/nginx/conf.d/default.conf
+  depends_on:
+    - app
+  ports:
+    - "8026:80"
 
