@@ -9,8 +9,6 @@ done
 
 echo "Mysql started"
 
-python manage.py makemigrations --no-input
-python manage.py makemigrations BAapp --no-input
 python manage.py migrate --no-input
 
 rm -rf /app/static/*
